@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Check, X, RefreshCw } from "lucide-react";
+import { Check, RefreshCw } from "lucide-react";
+import { AlignmentText, AlignmentLegend, type AlignmentWord } from "./AlignmentText";
 
 interface AttemptCardProps {
-  transcription: string;
+  transcription?: string;
+  alignment?: AlignmentWord[];
   accuracy?: number;
   status: "success" | "partial" | "retry" | "pending";
   className?: string;
@@ -45,7 +47,7 @@ const statusConfig = {
   },
 };
 
-export function AttemptCard({ transcription, accuracy, status, className }: AttemptCardProps) {
+export function AttemptCard({ transcription, alignment, accuracy, status, className }: AttemptCardProps) {
   const config = statusConfig[status];
   const Icon = config.icon;
 
@@ -100,15 +102,22 @@ export function AttemptCard({ transcription, accuracy, status, className }: Atte
             )}
           </div>
 
-          {/* Transcription */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg leading-relaxed text-card-foreground"
-          >
-            "{transcription}"
-          </motion.p>
+          {/* Alignment or plain transcription */}
+          {alignment ? (
+            <div className="space-y-3">
+              <AlignmentText words={alignment} />
+              <AlignmentLegend className="pt-2 border-t border-border/50" />
+            </div>
+          ) : transcription ? (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-base sm:text-lg leading-relaxed text-card-foreground"
+            >
+              "{transcription}"
+            </motion.p>
+          ) : null}
         </CardContent>
       </Card>
     </motion.div>
