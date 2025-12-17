@@ -1,10 +1,24 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Plus, MoreVertical, BookOpen } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AddVerseDialog from "@/components/library/AddVerseDialog";
+import { toast } from "@/hooks/use-toast";
+
+interface Verse {
+  id: string;
+  reference: string;
+  preview: string;
+}
+
+interface CollectionData {
+  name: string;
+  verses: Verse[];
+}
 
 // Mock data - will be replaced with real data later
-const collectionsData: Record<string, { name: string; verses: Array<{ id: string; reference: string; preview: string }> }> = {
+const initialCollectionsData: Record<string, CollectionData> = {
   "my-verses": {
     name: "My Verses",
     verses: [
@@ -33,7 +47,7 @@ const VerseCard = ({
   verse,
   index,
 }: {
-  verse: { id: string; reference: string; preview: string };
+  verse: Verse;
   index: number;
 }) => {
   const navigate = useNavigate();
@@ -77,7 +91,33 @@ const VerseCard = ({
 
 const Collection = () => {
   const { collectionId } = useParams<{ collectionId: string }>();
+  const [collectionsData, setCollectionsData] = useState(initialCollectionsData);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
   const collection = collectionsData[collectionId || ""] || { name: "Collection", verses: [] };
+
+  const handleAddVerse = (verse: { reference: string; text: string }) => {
+    if (!collectionId) return;
+    
+    const newVerse: Verse = {
+      id: Date.now().toString(),
+      reference: verse.reference,
+      preview: verse.text.length > 80 ? verse.text.slice(0, 80) + "..." : verse.text,
+    };
+    
+    setCollectionsData((prev) => ({
+      ...prev,
+      [collectionId]: {
+        ...prev[collectionId],
+        verses: [...(prev[collectionId]?.verses || []), newVerse],
+      },
+    }));
+    
+    toast({
+      title: "Verse added",
+      description: `${verse.reference} has been added to ${collection.name}.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,7 +134,7 @@ const Collection = () => {
               </Link>
               <h1 className="text-xl font-bold text-foreground">{collection.name}</h1>
             </div>
-            <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" onClick={() => setDialogOpen(true)}>
               <Plus className="w-4 h-4" />
               Add Verse
             </Button>
@@ -123,13 +163,21 @@ const Collection = () => {
             <p className="text-sm text-muted-foreground mb-4">
               Add your first verse to start memorizing
             </p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setDialogOpen(true)}>
               <Plus className="w-4 h-4" />
               Add Verse
             </Button>
           </motion.div>
         )}
       </main>
+
+      {/* Add Verse Dialog */}
+      <AddVerseDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onAdd={handleAddVerse}
+        collectionName={collection.name}
+      />
     </div>
   );
 };
