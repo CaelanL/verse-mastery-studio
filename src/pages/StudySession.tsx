@@ -4,6 +4,7 @@ import { ArrowLeft, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerseCard } from "@/components/study/VerseCard";
 import { AttemptCard } from "@/components/study/AttemptCard";
+import { type AlignmentWord } from "@/components/study/AlignmentText";
 import { RecordingButton } from "@/components/study/RecordingButton";
 import { RecordingBar } from "@/components/study/RecordingBar";
 import { ProgressIndicator } from "@/components/study/ProgressIndicator";
@@ -17,15 +18,48 @@ const DEMO_VERSE = {
   text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
 };
 
+// Mock alignment data for demo
+const MOCK_ALIGNMENT: AlignmentWord[] = [
+  { word: "For", status: "correct" },
+  { word: "God", status: "correct" },
+  { word: "so", status: "correct" },
+  { word: "loved", status: "correct" },
+  { word: "the", status: "correct" },
+  { word: "world", status: "missing", expected: "world" },
+  { word: "earth", status: "added" },
+  { word: "that", status: "correct" },
+  { word: "he", status: "correct" },
+  { word: "gave", status: "correct" },
+  { word: "his", status: "correct" },
+  { word: "one", status: "correct" },
+  { word: "and", status: "correct" },
+  { word: "only", status: "missing", expected: "only" },
+  { word: "Son,", status: "correct" },
+  { word: "that", status: "correct" },
+  { word: "whoever", status: "correct" },
+  { word: "believes", status: "correct" },
+  { word: "in", status: "correct" },
+  { word: "him", status: "correct" },
+  { word: "shall", status: "correct" },
+  { word: "not", status: "correct" },
+  { word: "perish", status: "correct" },
+  { word: "but", status: "correct" },
+  { word: "have", status: "correct" },
+  { word: "eternal", status: "correct" },
+  { word: "life.", status: "correct" },
+];
+
+interface Attempt {
+  alignment: AlignmentWord[];
+  accuracy: number;
+  status: "success" | "partial" | "retry";
+}
+
 export default function StudySession() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [attempts, setAttempts] = useState<Array<{
-    transcription: string;
-    accuracy: number;
-    status: "success" | "partial" | "retry";
-  }>>([]);
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
 
   const handleStartRecording = () => {
     setIsRecording(true);
@@ -35,16 +69,15 @@ export default function StudySession() {
     setIsRecording(false);
     setIsProcessing(true);
 
-    // Simulate processing and add attempt
+    // Simulate processing and add attempt with alignment
     setTimeout(() => {
       setIsProcessing(false);
-      const mockTranscription = "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.";
       const accuracy = Math.floor(Math.random() * 30) + 70; // 70-100%
       
       setAttempts((prev) => [
         ...prev,
         {
-          transcription: mockTranscription,
+          alignment: MOCK_ALIGNMENT,
           accuracy,
           status: accuracy >= 90 ? "success" : accuracy >= 70 ? "partial" : "retry",
         },
@@ -89,7 +122,7 @@ export default function StudySession() {
           {attempts.map((attempt, index) => (
             <AttemptCard
               key={index}
-              transcription={attempt.transcription}
+              alignment={attempt.alignment}
               accuracy={attempt.accuracy}
               status={attempt.status}
             />
