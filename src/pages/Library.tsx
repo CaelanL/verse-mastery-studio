@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Heart, ChevronRight, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AddCollectionDialog from "@/components/library/AddCollectionDialog";
+import { toast } from "@/hooks/use-toast";
 
-// Mock data - will be replaced with real data later
-const collections = [
+interface Collection {
+  id: string;
+  name: string;
+  verseCount: number;
+  isDefault: boolean;
+}
+
+const initialCollections: Collection[] = [
   {
     id: "my-verses",
     name: "My Verses",
@@ -29,7 +38,7 @@ const CollectionCard = ({
   collection,
   index,
 }: {
-  collection: (typeof collections)[0];
+  collection: Collection;
   index: number;
 }) => {
   return (
@@ -73,6 +82,23 @@ const CollectionCard = ({
 };
 
 const Library = () => {
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleAddCollection = (name: string) => {
+    const newCollection: Collection = {
+      id: name.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now(),
+      name,
+      verseCount: 0,
+      isDefault: false,
+    };
+    setCollections((prev) => [...prev, newCollection]);
+    toast({
+      title: "Collection created",
+      description: `"${name}" has been added to your library.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -80,7 +106,7 @@ const Library = () => {
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Library</h1>
-            <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" onClick={() => setDialogOpen(true)}>
               <Plus className="w-4 h-4" />
               New Collection
             </Button>
@@ -110,6 +136,13 @@ const Library = () => {
           </motion.div>
         )}
       </main>
+
+      {/* Add Collection Dialog */}
+      <AddCollectionDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onAdd={handleAddCollection}
+      />
     </div>
   );
 };
