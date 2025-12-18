@@ -10,15 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const translations = [
-  { value: "esv", label: "ESV", full: "English Standard Version" },
-  { value: "niv", label: "NIV", full: "New International Version" },
-  { value: "nlt", label: "NLT", full: "New Living Translation" },
-  { value: "kjv", label: "KJV", full: "King James Version" },
-  { value: "nasb", label: "NASB", full: "New American Standard Bible" },
-  { value: "nkjv", label: "NKJV", full: "New King James Version" },
-];
+import { translations, DEFAULT_TRANSLATION } from "@/lib/translations";
 
 const SettingsSection = ({
   title,
@@ -78,7 +70,7 @@ const SettingsRow = ({
 );
 
 const Settings = () => {
-  const [translation, setTranslation] = useState("esv");
+  const [translation, setTranslation] = useState(DEFAULT_TRANSLATION);
   const [darkMode, setDarkMode] = useState(false);
 
   const selectedTranslation = translations.find((t) => t.value === translation);
