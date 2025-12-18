@@ -5,11 +5,13 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AddVerseDialog from "@/components/library/AddVerseDialog";
 import { toast } from "@/hooks/use-toast";
+import { DEFAULT_TRANSLATION } from "@/lib/translations";
 
 interface Verse {
   id: string;
   reference: string;
   preview: string;
+  translation: string;
 }
 
 interface CollectionData {
@@ -22,23 +24,23 @@ const initialCollectionsData: Record<string, CollectionData> = {
   "my-verses": {
     name: "My Verses",
     verses: [
-      { id: "1", reference: "John 3:16", preview: "For God so loved the world that he gave his one and only Son..." },
-      { id: "2", reference: "Psalm 23:1", preview: "The Lord is my shepherd, I lack nothing..." },
-      { id: "3", reference: "Philippians 4:13", preview: "I can do all this through him who gives me strength..." },
-      { id: "4", reference: "Romans 8:28", preview: "And we know that in all things God works for the good..." },
+      { id: "1", reference: "John 3:16", preview: "For God so loved the world that he gave his one and only Son...", translation: "ESV" },
+      { id: "2", reference: "Psalm 23:1", preview: "The Lord is my shepherd, I lack nothing...", translation: "NIV" },
+      { id: "3", reference: "Philippians 4:13", preview: "I can do all this through him who gives me strength...", translation: "ESV" },
+      { id: "4", reference: "Romans 8:28", preview: "And we know that in all things God works for the good...", translation: "NLT" },
     ],
   },
   "psalms": {
     name: "Psalms of Comfort",
     verses: [
-      { id: "5", reference: "Psalm 46:1", preview: "God is our refuge and strength, an ever-present help in trouble..." },
-      { id: "6", reference: "Psalm 91:1-2", preview: "Whoever dwells in the shelter of the Most High..." },
+      { id: "5", reference: "Psalm 46:1", preview: "God is our refuge and strength, an ever-present help in trouble...", translation: "ESV" },
+      { id: "6", reference: "Psalm 91:1-2", preview: "Whoever dwells in the shelter of the Most High...", translation: "ESV" },
     ],
   },
   "proverbs": {
     name: "Wisdom from Proverbs",
     verses: [
-      { id: "7", reference: "Proverbs 3:5-6", preview: "Trust in the Lord with all your heart and lean not..." },
+      { id: "7", reference: "Proverbs 3:5-6", preview: "Trust in the Lord with all your heart and lean not...", translation: "KJV" },
     ],
   },
 };
@@ -69,6 +71,7 @@ const VerseCard = ({
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
               {verse.reference}
+              <span className="text-muted-foreground font-normal"> • {verse.translation}</span>
             </h3>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
               {verse.preview}
@@ -94,15 +97,19 @@ const Collection = () => {
   const [collectionsData, setCollectionsData] = useState(initialCollectionsData);
   const [dialogOpen, setDialogOpen] = useState(false);
   
+  // TODO: This should come from a global state/context
+  const globalTranslation = DEFAULT_TRANSLATION;
+  
   const collection = collectionsData[collectionId || ""] || { name: "Collection", verses: [] };
 
-  const handleAddVerse = (verse: { reference: string; text: string }) => {
+  const handleAddVerse = (verse: { reference: string; text: string; translation: string }) => {
     if (!collectionId) return;
     
     const newVerse: Verse = {
       id: Date.now().toString(),
       reference: verse.reference,
       preview: verse.text.length > 80 ? verse.text.slice(0, 80) + "..." : verse.text,
+      translation: verse.translation,
     };
     
     setCollectionsData((prev) => ({
@@ -115,7 +122,7 @@ const Collection = () => {
     
     toast({
       title: "Verse added",
-      description: `${verse.reference} has been added to ${collection.name}.`,
+      description: `${verse.reference} (${verse.translation}) has been added to ${collection.name}.`,
     });
   };
 
@@ -177,6 +184,7 @@ const Collection = () => {
         onOpenChange={setDialogOpen}
         onAdd={handleAddVerse}
         collectionName={collection.name}
+        defaultTranslation={globalTranslation}
       />
     </div>
   );

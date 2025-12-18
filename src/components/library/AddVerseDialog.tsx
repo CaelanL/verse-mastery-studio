@@ -1,16 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { translations, DEFAULT_TRANSLATION } from "@/lib/translations";
 
 interface AddVerseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAdd: (verse: { reference: string; text: string }) => void;
+  onAdd: (verse: { reference: string; text: string; translation: string }) => void;
   collectionName?: string;
+  defaultTranslation?: string;
 }
 
 const AddVerseDialog = ({
@@ -18,16 +27,30 @@ const AddVerseDialog = ({
   onOpenChange,
   onAdd,
   collectionName,
+  defaultTranslation = DEFAULT_TRANSLATION,
 }: AddVerseDialogProps) => {
   const [reference, setReference] = useState("");
   const [text, setText] = useState("");
+  const [translation, setTranslation] = useState(defaultTranslation);
+
+  // Reset translation to default when dialog opens
+  useEffect(() => {
+    if (open) {
+      setTranslation(defaultTranslation);
+    }
+  }, [open, defaultTranslation]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (reference.trim() && text.trim()) {
-      onAdd({ reference: reference.trim(), text: text.trim() });
+      onAdd({ 
+        reference: reference.trim(), 
+        text: text.trim(),
+        translation: translation.toUpperCase(),
+      });
       setReference("");
       setText("");
+      setTranslation(defaultTranslation);
       onOpenChange(false);
     }
   };
@@ -35,6 +58,7 @@ const AddVerseDialog = ({
   const handleClose = () => {
     setReference("");
     setText("");
+    setTranslation(defaultTranslation);
     onOpenChange(false);
   };
 
@@ -89,16 +113,34 @@ const AddVerseDialog = ({
               {/* Form */}
               <form onSubmit={handleSubmit} className="px-6 pb-6">
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="verse-reference">Reference</Label>
-                    <Input
-                      id="verse-reference"
-                      placeholder="e.g., John 3:16"
-                      value={reference}
-                      onChange={(e) => setReference(e.target.value)}
-                      autoFocus
-                      className="h-12"
-                    />
+                  {/* Reference and Translation Row */}
+                  <div className="flex gap-3">
+                    <div className="flex-1 space-y-2">
+                      <Label htmlFor="verse-reference">Reference</Label>
+                      <Input
+                        id="verse-reference"
+                        placeholder="e.g., John 3:16"
+                        value={reference}
+                        onChange={(e) => setReference(e.target.value)}
+                        autoFocus
+                        className="h-12"
+                      />
+                    </div>
+                    <div className="w-24 space-y-2">
+                      <Label htmlFor="verse-translation">Version</Label>
+                      <Select value={translation} onValueChange={setTranslation}>
+                        <SelectTrigger className="h-12">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {translations.map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              <span className="font-medium">{t.label}</span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
