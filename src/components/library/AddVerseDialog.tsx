@@ -1,18 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { translations, DEFAULT_TRANSLATION } from "@/lib/translations";
+import { X } from "lucide-react";
+import { DEFAULT_TRANSLATION } from "@/lib/translations";
+import BibleBrowser from "./BibleBrowser";
 
 interface AddVerseDialogProps {
   open: boolean;
@@ -29,36 +19,12 @@ const AddVerseDialog = ({
   collectionName,
   defaultTranslation = DEFAULT_TRANSLATION,
 }: AddVerseDialogProps) => {
-  const [reference, setReference] = useState("");
-  const [text, setText] = useState("");
-  const [translation, setTranslation] = useState(defaultTranslation);
-
-  // Reset translation to default when dialog opens
-  useEffect(() => {
-    if (open) {
-      setTranslation(defaultTranslation);
-    }
-  }, [open, defaultTranslation]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (reference.trim() && text.trim()) {
-      onAdd({ 
-        reference: reference.trim(), 
-        text: text.trim(),
-        translation: translation.toUpperCase(),
-      });
-      setReference("");
-      setText("");
-      setTranslation(defaultTranslation);
-      onOpenChange(false);
-    }
+  const handleSelect = (verse: { reference: string; text: string; translation: string }) => {
+    onAdd(verse);
+    onOpenChange(false);
   };
 
   const handleClose = () => {
-    setReference("");
-    setText("");
-    setTranslation(defaultTranslation);
     onOpenChange(false);
   };
 
@@ -78,101 +44,43 @@ const AddVerseDialog = ({
 
           {/* Dialog */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4"
+            className="fixed inset-x-0 bottom-0 z-50 h-[85vh] px-2 pb-2"
           >
-            <div className="bg-card rounded-2xl shadow-elevation-4 border border-border overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                    <BookOpen className="w-5 h-5 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-card-foreground">
-                      Add Verse
-                    </h2>
-                    {collectionName && (
-                      <p className="text-sm text-muted-foreground">
-                        to {collectionName}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={handleClose}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <X className="w-5 h-5 text-muted-foreground" />
-                </button>
+            <div className="h-full bg-card rounded-t-3xl shadow-elevation-4 border border-border overflow-hidden flex flex-col">
+              {/* Drag Handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
               </div>
+              
+              {/* Close button - mobile friendly */}
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-2 rounded-full bg-muted/80 hover:bg-muted transition-colors z-10"
+              >
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="px-6 pb-6">
-                <div className="space-y-4">
-                  {/* Reference and Translation Row */}
-                  <div className="flex gap-3">
-                    <div className="flex-1 space-y-2">
-                      <Label htmlFor="verse-reference">Reference</Label>
-                      <Input
-                        id="verse-reference"
-                        placeholder="e.g., John 3:16"
-                        value={reference}
-                        onChange={(e) => setReference(e.target.value)}
-                        autoFocus
-                        className="h-12"
-                      />
-                    </div>
-                    <div className="w-24 space-y-2">
-                      <Label htmlFor="verse-translation">Version</Label>
-                      <Select value={translation} onValueChange={setTranslation}>
-                        <SelectTrigger className="h-12">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {translations.map((t) => (
-                            <SelectItem key={t.value} value={t.value}>
-                              <span className="font-medium">{t.label}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="verse-text">Verse Text</Label>
-                    <Textarea
-                      id="verse-text"
-                      placeholder="Enter the verse text..."
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      className="min-h-[120px] resize-none"
-                    />
-                  </div>
+              {/* Collection name badge */}
+              {collectionName && (
+                <div className="px-4 pb-2">
+                  <span className="text-xs text-muted-foreground">
+                    Adding to <span className="font-medium text-foreground">{collectionName}</span>
+                  </span>
                 </div>
+              )}
 
-                <div className="flex gap-3 mt-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClose}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={!reference.trim() || !text.trim()}
-                    className="flex-1"
-                  >
-                    Add Verse
-                  </Button>
-                </div>
-              </form>
+              {/* Bible Browser */}
+              <div className="flex-1 overflow-hidden">
+                <BibleBrowser
+                  onSelect={handleSelect}
+                  onCancel={handleClose}
+                  defaultTranslation={defaultTranslation}
+                />
+              </div>
             </div>
           </motion.div>
         </>
