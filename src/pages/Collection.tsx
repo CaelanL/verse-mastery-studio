@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import AddVerseDialog from "@/components/library/AddVerseDialog";
 import { toast } from "@/hooks/use-toast";
 import { DEFAULT_TRANSLATION } from "@/lib/translations";
+import { MasteryBadge } from "@/components/study/MasteryBadge";
+import { getHighestMastery } from "@/lib/progress-data";
 
 interface Verse {
   id: string;
@@ -53,6 +55,7 @@ const VerseCard = ({
   index: number;
 }) => {
   const navigate = useNavigate();
+  const masteryLevel = getHighestMastery(verse.id);
 
   return (
     <motion.div
@@ -69,9 +72,12 @@ const VerseCard = ({
             <BookOpen className="w-5 h-5 text-accent-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
+            <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
               {verse.reference}
               <span className="text-muted-foreground font-normal"> • {verse.translation}</span>
+              {masteryLevel && (
+                <MasteryBadge level={masteryLevel} size="sm" className="ml-1" />
+              )}
             </h3>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
               {verse.preview}

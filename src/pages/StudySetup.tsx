@@ -4,6 +4,8 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DifficultySelector } from "@/components/study/DifficultySelector";
+import { MasteryLegend } from "@/components/study/MasteryBadge";
+import { getVerseProgress } from "@/lib/progress-data";
 
 // Mock data - will be replaced with real data later
 const versesData: Record<string, { reference: string; text: string }> = {
@@ -45,6 +47,7 @@ const StudySetup = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   const verse = versesData[verseId || ""] || { reference: "Unknown", text: "" };
+  const progress = getVerseProgress(verseId || "");
 
   const handleStartStudy = () => {
     navigate(`/study/${verseId}?difficulty=${difficulty}`);
@@ -87,10 +90,14 @@ const StudySetup = () => {
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <h2 className="text-lg font-semibold text-foreground">Choose Difficulty</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-foreground">Choose Difficulty</h2>
+              <MasteryLegend />
+            </div>
             <DifficultySelector
               value={difficulty}
               onChange={setDifficulty}
+              progress={progress}
             />
           </motion.div>
 
