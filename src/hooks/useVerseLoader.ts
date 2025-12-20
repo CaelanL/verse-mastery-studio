@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 export type LoadingState = "idle" | "loading" | "success" | "error";
 
@@ -6,8 +6,7 @@ interface UseVerseLoaderOptions<T> {
   fetchFn: () => Promise<T>;
   onSuccess?: (data: T) => void;
   onError?: (error: Error) => void;
-  // Simulate network delay for mock data (ms)
-  simulateDelay?: number;
+  autoLoad?: boolean;
 }
 
 interface UseVerseLoaderReturn<T> {
@@ -25,37 +24,51 @@ export function useVerseLoader<T>({
   fetchFn,
   onSuccess,
   onError,
-  simulateDelay = 0,
+  autoLoad = true,
 }: UseVerseLoaderOptions<T>): UseVerseLoaderReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [state, setState] = useState<LoadingState>("idle");
   const [error, setError] = useState<Error | null>(null);
+  
+  // Use refs to avoid stale closures
+  const fetchFnRef = useRef(fetchFn);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  
+  // Update refs on each render
+  useEffect(() => {
+    fetchFnRef.current = fetchFn;
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  });
 
   const load = useCallback(async () => {
     setState("loading");
     setError(null);
 
     try {
-      // Add simulated delay if needed (useful for showing loading states with mock data)
-      if (simulateDelay > 0) {
-        await new Promise(resolve => setTimeout(resolve, simulateDelay));
-      }
-
-      const result = await fetchFn();
+      const result = await fetchFnRef.current();
       setData(result);
       setState("success");
-      onSuccess?.(result);
+      onSuccessRef.current?.(result);
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to load data");
       setError(error);
       setState("error");
-      onError?.(error);
+      onErrorRef.current?.(error);
     }
-  }, [fetchFn, onSuccess, onError, simulateDelay]);
+  }, []);
 
   const retry = useCallback(async () => {
     await load();
   }, [load]);
+
+  // Auto-load on mount
+  useEffect(() => {
+    if (autoLoad) {
+      load();
+    }
+  }, [autoLoad, load]);
 
   return {
     data,

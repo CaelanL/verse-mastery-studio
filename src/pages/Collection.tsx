@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Plus, MoreVertical, BookOpen } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -10,7 +10,6 @@ import { MasteryBadge } from "@/components/study/MasteryBadge";
 import { getHighestMastery } from "@/lib/progress-data";
 import { VerseListSkeleton } from "@/components/library/VerseCardSkeleton";
 import { ConnectionError } from "@/components/library/ConnectionError";
-import { useVerseLoader } from "@/hooks/useVerseLoader";
 
 interface Verse {
   id: string;
@@ -53,7 +52,7 @@ const collectionsDatabase: Record<string, CollectionData> = {
 // Simulate API call - replace with real API later
 const fetchCollectionData = async (collectionId: string): Promise<CollectionData> => {
   // Simulate network latency
-  await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 300));
+  await new Promise(resolve => setTimeout(resolve, 600));
   
   const data = collectionsDatabase[collectionId];
   if (!data) {
@@ -78,9 +77,9 @@ const VerseCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.3 }}
     >
-      <button
+      <div
         onClick={() => navigate(`/setup/${verse.id}`)}
-        className="w-full text-left group relative bg-card rounded-xl p-4 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 border border-border/50 hover:border-primary/30"
+        className="w-full text-left group relative bg-card rounded-xl p-4 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 border border-border/50 hover:border-primary/30 cursor-pointer"
       >
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
@@ -108,37 +107,55 @@ const VerseCard = ({
             <MoreVertical className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
-      </button>
+      </div>
     </motion.div>
   );
 };
 
+type LoadState = "loading" | "success" | "error";
+
 const Collection = () => {
   const { collectionId } = useParams<{ collectionId: string }>();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [localVerses, setLocalVerses] = useState<Verse[]>([]);
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [collectionName, setCollectionName] = useState("Collection");
+  const [loadState, setLoadState] = useState<LoadState>("loading");
+  const [retryCount, setRetryCount] = useState(0);
   
-  // TODO: This should come from a global state/context
   const globalTranslation = DEFAULT_TRANSLATION;
 
-  const fetchCollection = useCallback(async () => {
-    if (!collectionId) return { name: "Collection", verses: [] };
-    return fetchCollectionData(collectionId);
-  }, [collectionId]);
-
-  const { data: collection, isLoading, isError, retry, load } = useVerseLoader({
-    fetchFn: fetchCollection,
-    onSuccess: (data) => setLocalVerses(data.verses),
-    simulateDelay: 0, // Already simulated in fetchCollectionData
-  });
-
-  // Load on mount and when collectionId changes
+  // Load collection data
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!collectionId) return;
 
-  const collectionName = collection?.name || "Collection";
-  const verses = localVerses;
+    let cancelled = false;
+    setLoadState("loading");
+
+    const loadData = async () => {
+      try {
+        const data = await fetchCollectionData(collectionId);
+        if (!cancelled) {
+          setCollectionName(data.name);
+          setVerses(data.verses);
+          setLoadState("success");
+        }
+      } catch {
+        if (!cancelled) {
+          setLoadState("error");
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [collectionId, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   const handleAddVerse = (verse: { reference: string; text: string; translation: string }) => {
     if (!collectionId) return;
@@ -150,7 +167,7 @@ const Collection = () => {
       translation: verse.translation,
     };
     
-    setLocalVerses(prev => [...prev, newVerse]);
+    setVerses(prev => [...prev, newVerse]);
     
     toast({
       title: "Verse added",
@@ -159,14 +176,14 @@ const Collection = () => {
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (loadState === "loading") {
       return <VerseListSkeleton count={4} />;
     }
 
-    if (isError) {
+    if (loadState === "error") {
       return (
         <ConnectionError 
-          onRetry={retry}
+          onRetry={handleRetry}
           message="Unable to load verses. Please check your connection and try again."
           type="connection"
         />
@@ -223,7 +240,7 @@ const Collection = () => {
               size="sm" 
               className="gap-2" 
               onClick={() => setDialogOpen(true)}
-              disabled={isLoading}
+              disabled={loadState === "loading"}
             >
               <Plus className="w-4 h-4" />
               Add Verse
