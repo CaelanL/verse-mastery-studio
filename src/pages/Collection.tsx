@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Plus, MoreVertical, BookOpen } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -8,6 +8,9 @@ import { toast } from "@/hooks/use-toast";
 import { DEFAULT_TRANSLATION } from "@/lib/translations";
 import { MasteryBadge } from "@/components/study/MasteryBadge";
 import { getHighestMastery } from "@/lib/progress-data";
+import { VerseListSkeleton } from "@/components/library/VerseCardSkeleton";
+import { ConnectionError } from "@/components/library/ConnectionError";
+import { useVerseLoader } from "@/hooks/useVerseLoader";
 
 interface Verse {
   id: string;
@@ -22,7 +25,7 @@ interface CollectionData {
 }
 
 // Mock data - will be replaced with real data later
-const initialCollectionsData: Record<string, CollectionData> = {
+const collectionsDatabase: Record<string, CollectionData> = {
   "my-verses": {
     name: "My Verses",
     verses: [
@@ -45,6 +48,23 @@ const initialCollectionsData: Record<string, CollectionData> = {
       { id: "7", reference: "Proverbs 3:5-6", preview: "Trust in the Lord with all your heart and lean not...", translation: "KJV" },
     ],
   },
+};
+
+// Simulate API call - replace with real API later
+const fetchCollectionData = async (collectionId: string): Promise<CollectionData> => {
+  // Simulate network latency
+  await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+  
+  // Simulate random connection failures (10% chance) - remove in production
+  if (Math.random() < 0.1) {
+    throw new Error("Network request failed. Please check your connection.");
+  }
+  
+  const data = collectionsDatabase[collectionId];
+  if (!data) {
+    return { name: "Collection", verses: [] };
+  }
+  return data;
 };
 
 const VerseCard = ({
@@ -100,13 +120,30 @@ const VerseCard = ({
 
 const Collection = () => {
   const { collectionId } = useParams<{ collectionId: string }>();
-  const [collectionsData, setCollectionsData] = useState(initialCollectionsData);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [localVerses, setLocalVerses] = useState<Verse[]>([]);
   
   // TODO: This should come from a global state/context
   const globalTranslation = DEFAULT_TRANSLATION;
-  
-  const collection = collectionsData[collectionId || ""] || { name: "Collection", verses: [] };
+
+  const fetchCollection = useCallback(async () => {
+    if (!collectionId) return { name: "Collection", verses: [] };
+    return fetchCollectionData(collectionId);
+  }, [collectionId]);
+
+  const { data: collection, isLoading, isError, retry, load } = useVerseLoader({
+    fetchFn: fetchCollection,
+    onSuccess: (data) => setLocalVerses(data.verses),
+    simulateDelay: 0, // Already simulated in fetchCollectionData
+  });
+
+  // Load on mount and when collectionId changes
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const collectionName = collection?.name || "Collection";
+  const verses = localVerses;
 
   const handleAddVerse = (verse: { reference: string; text: string; translation: string }) => {
     if (!collectionId) return;
@@ -118,18 +155,58 @@ const Collection = () => {
       translation: verse.translation,
     };
     
-    setCollectionsData((prev) => ({
-      ...prev,
-      [collectionId]: {
-        ...prev[collectionId],
-        verses: [...(prev[collectionId]?.verses || []), newVerse],
-      },
-    }));
+    setLocalVerses(prev => [...prev, newVerse]);
     
     toast({
       title: "Verse added",
-      description: `${verse.reference} (${verse.translation}) has been added to ${collection.name}.`,
+      description: `${verse.reference} (${verse.translation}) has been added to ${collectionName}.`,
     });
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <VerseListSkeleton count={4} />;
+    }
+
+    if (isError) {
+      return (
+        <ConnectionError 
+          onRetry={retry}
+          message="Unable to load verses. Please check your connection and try again."
+          type="connection"
+        />
+      );
+    }
+
+    if (verses.length > 0) {
+      return (
+        <div className="space-y-3">
+          {verses.map((verse, index) => (
+            <VerseCard key={verse.id} verse={verse} index={index} />
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-16"
+      >
+        <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
+          <BookOpen className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-semibold text-foreground mb-2">No verses yet</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Add your first verse to start memorizing
+        </p>
+        <Button className="gap-2" onClick={() => setDialogOpen(true)}>
+          <Plus className="w-4 h-4" />
+          Add Verse
+        </Button>
+      </motion.div>
+    );
   };
 
   return (
@@ -145,9 +222,14 @@ const Collection = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-foreground" />
               </Link>
-              <h1 className="text-xl font-bold text-foreground">{collection.name}</h1>
+              <h1 className="text-xl font-bold text-foreground">{collectionName}</h1>
             </div>
-            <Button size="sm" className="gap-2" onClick={() => setDialogOpen(true)}>
+            <Button 
+              size="sm" 
+              className="gap-2" 
+              onClick={() => setDialogOpen(true)}
+              disabled={isLoading}
+            >
               <Plus className="w-4 h-4" />
               Add Verse
             </Button>
@@ -157,31 +239,7 @@ const Collection = () => {
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-4 py-6">
-        {collection.verses.length > 0 ? (
-          <div className="space-y-3">
-            {collection.verses.map((verse, index) => (
-              <VerseCard key={verse.id} verse={verse} index={index} />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
-            <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
-              <BookOpen className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <h3 className="font-semibold text-foreground mb-2">No verses yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add your first verse to start memorizing
-            </p>
-            <Button className="gap-2" onClick={() => setDialogOpen(true)}>
-              <Plus className="w-4 h-4" />
-              Add Verse
-            </Button>
-          </motion.div>
-        )}
+        {renderContent()}
       </main>
 
       {/* Add Verse Dialog */}
@@ -189,7 +247,7 @@ const Collection = () => {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onAdd={handleAddVerse}
-        collectionName={collection.name}
+        collectionName={collectionName}
         defaultTranslation={globalTranslation}
       />
     </div>
