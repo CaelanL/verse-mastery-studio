@@ -53,12 +53,7 @@ const collectionsDatabase: Record<string, CollectionData> = {
 // Simulate API call - replace with real API later
 const fetchCollectionData = async (collectionId: string): Promise<CollectionData> => {
   // Simulate network latency
-  await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-  
-  // Simulate random connection failures (10% chance) - remove in production
-  if (Math.random() < 0.1) {
-    throw new Error("Network request failed. Please check your connection.");
-  }
+  await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 300));
   
   const data = collectionsDatabase[collectionId];
   if (!data) {
