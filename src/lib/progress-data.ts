@@ -80,3 +80,14 @@ export function getHighestMastery(verseId: string): MasteryLevel {
 export function getVerseProgress(verseId: string): VerseProgress | null {
   return progressData[verseId] || null;
 }
+
+export function resetVerseProgress(verseId: string): void {
+  if (progressData[verseId]) {
+    progressData[verseId] = {
+      verseId,
+      easy: null,
+      medium: null,
+      hard: null,
+    };
+  }
+}

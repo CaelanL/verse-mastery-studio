@@ -1,11 +1,28 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Play } from "lucide-react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Play, MoreVertical, RotateCcw } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DifficultySelector } from "@/components/study/DifficultySelector";
 import { MasteryLegend } from "@/components/study/MasteryBadge";
-import { getVerseProgress } from "@/lib/progress-data";
+import { getVerseProgress, resetVerseProgress } from "@/lib/progress-data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 // Mock data - will be replaced with real data later
 const versesData: Record<string, { reference: string; text: string }> = {
@@ -45,12 +62,25 @@ const StudySetup = () => {
   const { verseId } = useParams<{ verseId: string }>();
   const navigate = useNavigate();
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [showResetDialog, setShowResetDialog] = useState(false);
 
   const verse = versesData[verseId || ""] || { reference: "Unknown", text: "" };
-  const progress = getVerseProgress(verseId || "");
+  const [progress, setProgress] = useState(() => getVerseProgress(verseId || ""));
 
   const handleStartStudy = () => {
     navigate(`/study/${verseId}?difficulty=${difficulty}`);
+  };
+
+  const handleResetProgress = () => {
+    if (verseId) {
+      resetVerseProgress(verseId);
+      setProgress(getVerseProgress(verseId));
+      toast({
+        title: "Progress reset",
+        description: `All progress for ${verse.reference} has been cleared.`,
+      });
+    }
+    setShowResetDialog(false);
   };
 
   return (
@@ -58,17 +88,57 @@ const StudySetup = () => {
       {/* Header */}
       <header className="bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </button>
-            <h1 className="text-xl font-bold text-foreground">Study Setup</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-foreground" />
+              </button>
+              <h1 className="text-xl font-bold text-foreground">Study Setup</h1>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-2 -mr-2 rounded-lg hover:bg-muted transition-colors">
+                  <MoreVertical className="w-5 h-5 text-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setShowResetDialog(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset Progress
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
+
+      {/* Reset Confirmation Dialog */}
+      <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset progress for {verse.reference}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all your practice history and scores for this verse. 
+              You'll need to start over from the beginning.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleResetProgress}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reset Progress
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Content */}
       <main className="flex-1 max-w-2xl mx-auto px-4 py-8 w-full">
