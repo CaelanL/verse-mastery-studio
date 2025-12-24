@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, BookOpen, Moon, Sun, Info } from "lucide-react";
+import { ChevronRight, BookOpen, Moon, Sun, Info, BarChart3 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -70,6 +71,7 @@ const SettingsRow = ({
 );
 
 const Settings = () => {
+  const navigate = useNavigate();
   const [translation, setTranslation] = useState(DEFAULT_TRANSLATION);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -86,6 +88,16 @@ const Settings = () => {
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        {/* Your Progress */}
+        <SettingsSection title="Your Progress" delay={0}>
+          <SettingsRow
+            icon={BarChart3}
+            label="Insights"
+            description="View your memorization stats"
+            onClick={() => navigate("/insights")}
+          />
+        </SettingsSection>
+
         {/* Bible Settings */}
         <SettingsSection title="Bible" delay={0}>
           <SettingsRow
