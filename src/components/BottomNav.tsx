@@ -1,9 +1,10 @@
-import { Library, Settings } from "lucide-react";
+import { Home, Library, Settings } from "lucide-react";
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/", icon: Library, label: "Library" },
+  { to: "/", icon: Home, label: "Home" },
+  { to: "/library", icon: Library, label: "Library" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
