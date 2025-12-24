@@ -9,6 +9,7 @@ import Collection from "./pages/Collection";
 import StudySetup from "./pages/StudySetup";
 import StudySession from "./pages/StudySession";
 import Settings from "./pages/Settings";
+import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/collection/:collectionId" element={<Collection />} />
           <Route path="/setup/:verseId" element={<StudySetup />} />
           <Route path="/study/:verseId" element={<StudySession />} />
+          <Route path="/insights" element={<Insights />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

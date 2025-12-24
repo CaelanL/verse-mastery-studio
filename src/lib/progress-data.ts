@@ -91,3 +91,59 @@ export function resetVerseProgress(verseId: string): void {
     };
   }
 }
+
+// Mock practice streak data
+export const practiceStreak = {
+  days: 6,
+  message: "Keep it going!",
+};
+
+// Mock book data for verses (in real app, this would come from verse metadata)
+const verseBooks: Record<string, string> = {
+  "1": "Psalms",
+  "2": "John",
+  "3": "Romans",
+  "4": "Genesis",
+  "5": "Psalms",
+  "6": "John",
+  "7": "Proverbs",
+};
+
+export function getInsightsStats(): { versesMastered: number; inProgress: number } {
+  let versesMastered = 0;
+  let inProgress = 0;
+
+  Object.values(progressData).forEach((progress) => {
+    const hasHardMastery = progress.hard && progress.hard.bestScore >= MASTERY_THRESHOLD;
+    const hasAnyProgress = progress.easy || progress.medium || progress.hard;
+
+    if (hasHardMastery) {
+      versesMastered++;
+    } else if (hasAnyProgress) {
+      inProgress++;
+    }
+  });
+
+  return { versesMastered, inProgress };
+}
+
+export function getMostMemorizedBooks(): { name: string; count: number }[] {
+  const bookCounts: Record<string, number> = {};
+
+  Object.entries(progressData).forEach(([verseId, progress]) => {
+    const hasAnyMastery =
+      (progress.easy && progress.easy.bestScore >= MASTERY_THRESHOLD) ||
+      (progress.medium && progress.medium.bestScore >= MASTERY_THRESHOLD) ||
+      (progress.hard && progress.hard.bestScore >= MASTERY_THRESHOLD);
+
+    if (hasAnyMastery) {
+      const book = verseBooks[verseId] || "Unknown";
+      bookCounts[book] = (bookCounts[book] || 0) + 1;
+    }
+  });
+
+  return Object.entries(bookCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
