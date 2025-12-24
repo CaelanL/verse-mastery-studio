@@ -35,17 +35,17 @@ export function VerseOfMonthModal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-hidden rounded-t-3xl"
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-hidden rounded-t-3xl bg-card"
           >
             {/* Background Image with Overlay */}
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${verse.backgroundImage})` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/40" />
 
             {/* Content */}
-            <div className="relative flex flex-col p-6 pb-safe">
+            <div className="relative flex flex-col p-6 pb-8 min-h-[320px]">
               {/* Handle bar */}
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/30" />
 
