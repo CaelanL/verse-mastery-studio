@@ -1,32 +1,30 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Flame, BookOpen, CheckCircle2, Clock } from "lucide-react";
+import { ArrowLeft, Flame, CheckCircle2, Clock, Target, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getInsightsStats, getMostMemorizedBooks, practiceStreak } from "@/lib/progress-data";
 
-const StatCard = ({
-  value,
-  label,
-  icon: Icon,
-  colorClass,
-  delay = 0,
-}: {
+const MEDALS = ["🥇", "🥈", "🥉"];
+
+interface StatItemProps {
   value: number;
   label: string;
   icon: React.ElementType;
   colorClass: string;
   delay?: number;
-}) => (
+}
+
+const StatItem = ({ value, label, icon: Icon, colorClass, delay = 0 }: StatItemProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.3 }}
-    className="flex-1 bg-card rounded-xl border border-border/50 shadow-elevation-1 p-5"
+    className="bg-card rounded-xl border border-border/50 p-4 flex flex-col items-center text-center"
   >
-    <div className={`w-10 h-10 rounded-lg ${colorClass} flex items-center justify-center mb-3`}>
+    <div className={`w-10 h-10 rounded-full ${colorClass} flex items-center justify-center mb-2`}>
       <Icon className="w-5 h-5 text-white" />
     </div>
-    <p className="text-3xl font-bold text-card-foreground">{value}</p>
-    <p className="text-sm text-muted-foreground">{label}</p>
+    <p className="text-2xl font-bold text-card-foreground">{value}</p>
+    <p className="text-xs text-muted-foreground uppercase tracking-wide">{label}</p>
   </motion.div>
 );
 
@@ -54,44 +52,47 @@ const Insights = () => {
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {/* Hero Stats */}
-        <div className="flex gap-4">
-          <StatCard
+        {/* Hero Streak Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 via-orange-400 to-amber-400 p-6 text-center shadow-lg"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent_60%)]" />
+          <div className="relative z-10">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm mb-3"
+            >
+              <Flame className="w-9 h-9 text-white drop-shadow-md" />
+            </motion.div>
+            <p className="text-5xl font-extrabold text-white drop-shadow-sm">
+              {practiceStreak.days}
+            </p>
+            <p className="text-white/90 text-lg font-medium">day streak</p>
+            <p className="mt-2 text-white/80 text-sm">{practiceStreak.message}</p>
+          </div>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <StatItem
             value={stats.versesMastered}
-            label="Verses Mastered"
+            label="Mastered"
             icon={CheckCircle2}
-            colorClass="bg-green-500"
-            delay={0}
+            colorClass="bg-emerald-500"
+            delay={0.15}
           />
-          <StatCard
+          <StatItem
             value={stats.inProgress}
             label="In Progress"
             icon={Clock}
             colorClass="bg-blue-500"
-            delay={0.1}
+            delay={0.2}
           />
         </div>
-
-        {/* Practice Streak */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className="bg-card rounded-xl border border-border/50 shadow-elevation-1 p-5"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-orange-500/10 flex items-center justify-center">
-              <Flame className="w-8 h-8 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Practice Streak</p>
-              <p className="text-3xl font-bold text-card-foreground">
-                {practiceStreak.days} days
-              </p>
-              <p className="text-sm text-muted-foreground">{practiceStreak.message}</p>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Most Memorized Books */}
         <motion.div
@@ -99,28 +100,32 @@ const Insights = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Most Memorized Books
           </h2>
-          <div className="bg-card rounded-xl border border-border/50 shadow-elevation-1 overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
             {topBooks.length > 0 ? (
               topBooks.map((book, index) => (
                 <div
                   key={book.name}
-                  className="flex items-center justify-between p-4 border-b border-border/50 last:border-b-0"
+                  className="flex items-center justify-between px-4 py-3 border-b border-border/30 last:border-b-0"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center text-accent-foreground">
-                      <BookOpen className="w-5 h-5" />
-                    </div>
+                    <span className="text-lg w-6 text-center">
+                      {index < 3 ? MEDALS[index] : (
+                        <span className="text-xs font-medium text-muted-foreground">{index + 1}</span>
+                      )}
+                    </span>
                     <span className="font-medium text-card-foreground">{book.name}</span>
                   </div>
-                  <span className="text-muted-foreground">({book.count})</span>
+                  <span className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
+                    {book.count} {book.count === 1 ? "verse" : "verses"}
+                  </span>
                 </div>
               ))
             ) : (
-              <div className="p-6 text-center text-muted-foreground">
-                <p>No verses memorized yet</p>
+              <div className="p-8 text-center text-muted-foreground">
+                <p className="font-medium">No verses memorized yet</p>
                 <p className="text-sm mt-1">Start practicing to see your progress!</p>
               </div>
             )}
