@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import Home from "./pages/Home";
 import Library from "./pages/Library";
 import Collection from "./pages/Collection";
 import StudySetup from "./pages/StudySetup";
@@ -22,7 +23,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Library />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/library" element={<Library />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="/collection/:collectionId" element={<Collection />} />
