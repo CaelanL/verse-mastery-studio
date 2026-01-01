@@ -82,7 +82,8 @@ function LegendItem({ status, title, description, example }: LegendItemProps) {
     <div className={cn("rounded-lg border p-3 space-y-1.5", getStatusStyles())}>
       <div className="flex items-center gap-2">
         {getExampleElement()}
-        <span className="text-sm font-semibold text-foreground">{title}</span>
+        <span className="text-sm text-muted-foreground">—</span>
+        <span className="text-sm font-medium text-foreground">{title}</span>
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
     </div>
@@ -136,7 +137,7 @@ export function AlignmentHelpModal({ open, onClose }: AlignmentHelpModalProps) {
                   <AlignmentText words={EXAMPLE_ALIGNMENT} className="text-base" />
                 </div>
                 <p className="text-xs text-muted-foreground italic">
-                  In this example, you said "earth" instead of "world", then stopped reciting — missing the rest of the verse.
+                  In this example, you said "earth" instead of "world", then stopped reciting after "Son".
                 </p>
               </div>
 
@@ -168,10 +169,13 @@ export function AlignmentHelpModal({ open, onClose }: AlignmentHelpModalProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-border">
-              <Button onClick={onClose} className="w-full">
+            <div className="px-4 pb-4 pt-2">
+              <button 
+                onClick={onClose} 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto block"
+              >
                 Got it
-              </Button>
+              </button>
             </div>
           </motion.div>
         </>
