@@ -168,15 +168,6 @@ export function AlignmentHelpModal({ open, onClose }: AlignmentHelpModalProps) {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-4 pb-4 pt-2">
-              <button 
-                onClick={onClose} 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto block"
-              >
-                Got it
-              </button>
-            </div>
           </motion.div>
         </>
       )}
