@@ -9,7 +9,7 @@ interface AlignmentHelpModalProps {
   onClose: () => void;
 }
 
-// Example showing all 4 statuses with John 3:16
+// Example showing statuses with full John 3:16
 const EXAMPLE_ALIGNMENT: AlignmentWord[] = [
   { word: "For", status: "correct" },
   { word: "God", status: "correct" },
@@ -24,12 +24,24 @@ const EXAMPLE_ALIGNMENT: AlignmentWord[] = [
   { word: "his", status: "correct" },
   { word: "one", status: "correct" },
   { word: "and", status: "correct" },
-  { word: "only", status: "missing" },
-  { word: "Son", status: "close", expected: "Son," },
+  { word: "only", status: "correct" },
+  { word: "Son,", status: "correct" },
+  { word: "that", status: "missing" },
+  { word: "whoever", status: "missing" },
+  { word: "believes", status: "missing" },
+  { word: "in", status: "missing" },
+  { word: "him", status: "missing" },
+  { word: "shall", status: "missing" },
+  { word: "not", status: "missing" },
+  { word: "perish", status: "missing" },
+  { word: "but", status: "missing" },
+  { word: "have", status: "missing" },
+  { word: "eternal", status: "missing" },
+  { word: "life.", status: "missing" },
 ];
 
 interface LegendItemProps {
-  status: AlignmentWord["status"];
+  status: "correct" | "missing" | "added";
   title: string;
   description: string;
   example: string;
@@ -43,8 +55,6 @@ function LegendItem({ status, title, description, example }: LegendItemProps) {
       case "missing":
         return "bg-destructive/10 border-destructive/20";
       case "added":
-        return "bg-warning/10 border-warning/20";
-      case "close":
         return "bg-warning/10 border-warning/20";
     }
   };
@@ -62,12 +72,6 @@ function LegendItem({ status, title, description, example }: LegendItemProps) {
       case "added":
         return (
           <span className="text-warning underline decoration-wavy decoration-warning/60 underline-offset-4 font-medium">
-            {example}
-          </span>
-        );
-      case "close":
-        return (
-          <span className="bg-warning/20 text-warning-foreground rounded px-1 font-medium">
             {example}
           </span>
         );
@@ -132,7 +136,7 @@ export function AlignmentHelpModal({ open, onClose }: AlignmentHelpModalProps) {
                   <AlignmentText words={EXAMPLE_ALIGNMENT} className="text-base" />
                 </div>
                 <p className="text-xs text-muted-foreground italic">
-                  In this example, you said "earth" instead of "world", skipped "only", and said "Son" without the comma.
+                  In this example, you said "earth" instead of "world", then stopped reciting — missing the rest of the verse.
                 </p>
               </div>
 
@@ -159,13 +163,6 @@ export function AlignmentHelpModal({ open, onClose }: AlignmentHelpModalProps) {
                   title="Extra"
                   example="earth"
                   description="You said this word, but it wasn't in the original verse."
-                />
-                
-                <LegendItem
-                  status="close"
-                  title="Almost"
-                  example="Son"
-                  description="Very close! You said something similar but not exact (e.g., missed punctuation)."
                 />
               </div>
             </div>
