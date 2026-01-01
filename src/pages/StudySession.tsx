@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, MoreVertical } from "lucide-react";
+import { ArrowLeft, HelpCircle, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerseCard } from "@/components/study/VerseCard";
 import { AttemptCard } from "@/components/study/AttemptCard";
@@ -9,6 +9,7 @@ import { RecordingButton } from "@/components/study/RecordingButton";
 import { RecordingBar } from "@/components/study/RecordingBar";
 import { ProgressIndicator } from "@/components/study/ProgressIndicator";
 import { DifficultySelector } from "@/components/study/DifficultySelector";
+import { AlignmentHelpModal } from "@/components/study/AlignmentHelpModal";
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -60,6 +61,7 @@ export default function StudySession() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [showLegendHelp, setShowLegendHelp] = useState(false);
 
   const handleStartRecording = () => {
     setIsRecording(true);
@@ -96,9 +98,19 @@ export default function StudySession() {
           
           <h1 className="text-lg font-semibold text-foreground">Study Session</h1>
           
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-            <MoreVertical className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShowLegendHelp(true)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <MoreVertical className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -163,6 +175,9 @@ export default function StudySession() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Legend Help Modal */}
+      <AlignmentHelpModal open={showLegendHelp} onClose={() => setShowLegendHelp(false)} />
     </div>
   );
 }
