@@ -37,23 +37,25 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
     <div className={cn("space-y-5", className)}>
       {/* Progress - Horizontal columns with lines */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Progress</h2>
-        <div className="flex items-stretch divide-x divide-border">
-          {(["easy", "medium", "hard"] as Difficulty[]).map((difficulty) => {
-            const score = getScore(difficulty);
-            
-            return (
-              <div key={difficulty} className="flex-1 flex flex-col items-center py-3 first:pl-0 last:pr-0 px-4">
-                <span className="text-xs text-muted-foreground mb-1">{difficultyLabels[difficulty]}</span>
-                <span className={cn(
-                  "text-lg font-semibold tabular-nums",
-                  score !== null ? "text-foreground" : "text-muted-foreground/50"
-                )}>
-                  {score !== null ? `${score}%` : "—"}
-                </span>
-              </div>
-            );
-          })}
+        <h2 className="text-lg font-semibold text-foreground mb-3">Your Progress</h2>
+        <div className="bg-card rounded-2xl p-4 shadow-elevation-2 border border-border/50">
+          <div className="flex items-stretch divide-x divide-border">
+            {(["easy", "medium", "hard"] as Difficulty[]).map((difficulty) => {
+              const score = getScore(difficulty);
+              
+              return (
+                <div key={difficulty} className="flex-1 flex flex-col items-center py-2 first:pl-0 last:pr-0 px-4">
+                  <span className="text-xs text-muted-foreground mb-1">{difficultyLabels[difficulty]}</span>
+                  <span className={cn(
+                    "text-lg font-semibold tabular-nums",
+                    score !== null ? "text-foreground" : "text-muted-foreground/50"
+                  )}>
+                    {score !== null ? `${score}%` : "—"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
