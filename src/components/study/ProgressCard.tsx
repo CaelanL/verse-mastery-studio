@@ -66,9 +66,13 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
           <div className={cn(
             "pt-4 border-t -mx-4 px-4 pb-4 relative",
             engravedStatus.isEngraved 
-              ? "bg-amber-500/15 border-amber-400/30" 
+              ? "border-amber-400/30" 
               : "border-border/50"
-          )}>
+          )}
+            style={engravedStatus.isEngraved ? {
+              background: 'linear-gradient(180deg, rgba(251, 191, 36, 0.25) 0%, rgba(251, 191, 36, 0.08) 60%, rgba(255, 255, 255, 0) 100%)'
+            } : undefined}
+          >
             <div className="flex items-center justify-center gap-1.5 mb-3">
               <span className={cn(
                 "text-xs font-medium uppercase tracking-wide",
