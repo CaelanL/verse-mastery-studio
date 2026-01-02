@@ -1,8 +1,9 @@
-import { Cross, Check, Sparkles } from "lucide-react";
+import { Cross, Check, Sparkles, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { VerseProgress } from "@/lib/progress-data";
 import { getEngravedStatus, isMastered } from "@/lib/progress-data";
 import { format, addMonths } from "date-fns";
+import { ProgressInfoModal } from "./ProgressInfoModal";
 
 interface ProgressCardProps {
   verseId: string;
@@ -40,7 +41,10 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
 
   return (
     <div className={cn("space-y-3", className)}>
-      <h2 className="text-lg font-semibold text-foreground">Your Progress</h2>
+      <div className="flex items-center gap-1.5">
+        <h2 className="text-lg font-semibold text-foreground">Your Progress</h2>
+        <ProgressInfoModal type="mastered" />
+      </div>
       <div className="bg-card rounded-2xl p-4 pb-0 shadow-elevation-2 border border-border/50 space-y-4 overflow-hidden">
         {/* Best scores - Horizontal columns with lines */}
         <div className="flex items-stretch divide-x divide-border">
@@ -88,6 +92,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
               ) : (
                 <Cross className="w-4 h-4 text-purple-500" />
               )}
+              <ProgressInfoModal type="engraved" />
             </div>
             
             <div className="relative flex items-center justify-between px-2">
