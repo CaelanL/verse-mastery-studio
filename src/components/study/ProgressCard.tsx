@@ -63,10 +63,12 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
 
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
-          <div className={cn(
-            "pt-4 border-t border-border/50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl",
-            engravedStatus.isEngraved && "bg-gradient-to-b from-amber-500/5 via-amber-400/10 to-amber-500/8 shadow-[inset_0_0_30px_rgba(245,158,11,0.08)]"
-          )}>
+          <div 
+            className="pt-4 border-t border-border/50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl relative"
+            style={engravedStatus.isEngraved ? {
+              background: 'radial-gradient(ellipse 120% 100% at 50% 50%, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.06) 40%, rgba(251, 191, 36, 0.02) 70%, transparent 100%)'
+            } : undefined}
+          >
             <div className="flex items-center justify-center gap-1.5 mb-3">
               <span className={cn(
                 "text-xs font-medium uppercase tracking-wide",
