@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Cross, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { VerseProgress } from "@/lib/progress-data";
 import { getEngravedStatus, isMastered } from "@/lib/progress-data";
@@ -65,7 +65,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className="pt-4 border-t border-border/50">
             <div className="flex items-center justify-center gap-1.5 mb-3">
-              <X className="w-4 h-4 text-purple-500" strokeWidth={3} />
+              <Cross className="w-4 h-4 text-purple-500" />
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Engraved Progress
               </span>
@@ -73,7 +73,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
             
             {engravedStatus.isEngraved ? (
               <div className="flex items-center justify-center gap-2 text-purple-500">
-                <X className="w-4 h-4" strokeWidth={3} />
+                <Cross className="w-4 h-4" />
                 <span className="text-sm font-medium">Engraved!</span>
               </div>
             ) : (
@@ -95,7 +95,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
                             : "bg-background border-muted-foreground/30"
                         )}
                       >
-                        {isCompleted && <X className="w-3 h-3 text-white" strokeWidth={3} />}
+                        {isCompleted && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                       </div>
                       <span className="text-[10px] text-muted-foreground">
                         {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
