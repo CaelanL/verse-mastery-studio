@@ -43,7 +43,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-1.5">
         <h2 className="text-lg font-semibold text-foreground">Your Progress</h2>
-        <ProgressInfoModal type="mastered" />
+        <ProgressInfoModal />
       </div>
       <div className="bg-card rounded-2xl p-4 pb-0 shadow-elevation-2 border border-border/50 space-y-4 overflow-hidden">
         {/* Best scores - Horizontal columns with lines */}
@@ -92,7 +92,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
               ) : (
                 <Cross className="w-4 h-4 text-purple-500" />
               )}
-              <ProgressInfoModal type="engraved" />
+              
             </div>
             
             <div className="relative flex items-center justify-between px-2">
