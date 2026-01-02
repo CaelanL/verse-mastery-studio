@@ -154,20 +154,11 @@ const StudySetup = () => {
             <p className="text-lg text-card-foreground leading-relaxed">{verse.text}</p>
           </motion.div>
 
-          {/* Progress Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <ProgressCard verseId={verseId || ""} progress={progress} />
-          </motion.div>
-
           {/* Difficulty Selection */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
             className="space-y-3"
           >
             <div className="flex items-center justify-between">
@@ -179,6 +170,15 @@ const StudySetup = () => {
               onChange={setDifficulty}
               progress={progress}
             />
+          </motion.div>
+
+          {/* Progress Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <ProgressCard verseId={verseId || ""} progress={progress} />
           </motion.div>
 
           {/* Difficulty descriptions */}
