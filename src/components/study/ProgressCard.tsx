@@ -35,11 +35,9 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
 
   return (
     <div className={cn("space-y-5", className)}>
-      {/* Best Attempts - Horizontal columns with lines */}
+      {/* Progress - Horizontal columns with lines */}
       <div>
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3 block">
-          Best Attempts
-        </span>
+        <h2 className="text-lg font-semibold text-foreground mb-3">Progress</h2>
         <div className="flex items-stretch divide-x divide-border">
           {(["easy", "medium", "hard"] as Difficulty[]).map((difficulty) => {
             const score = getScore(difficulty);
