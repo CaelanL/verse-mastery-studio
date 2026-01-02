@@ -21,10 +21,14 @@ export interface VerseProgress {
 export const progressData: Record<string, VerseProgress> = {
   "1": {
     verseId: "1",
-    easy: { bestScore: 92, lastAttempt: new Date() },
-    medium: { bestScore: 75, lastAttempt: new Date() },
-    hard: { bestScore: 91, lastAttempt: new Date() },
-    engraved: null,
+    easy: { bestScore: 100, lastAttempt: new Date() },
+    medium: { bestScore: 98, lastAttempt: new Date() },
+    hard: { bestScore: 95, lastAttempt: new Date() },
+    engraved: {
+      masteredMonths: ["2025-09", "2025-10", "2025-11", "2025-12"],
+      isEngraved: true,
+      engravedDate: new Date("2025-12-15"),
+    },
   },
   "2": {
     verseId: "2",
