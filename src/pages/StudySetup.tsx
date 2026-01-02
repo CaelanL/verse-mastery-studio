@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DifficultySelector } from "@/components/study/DifficultySelector";
 import { MasteryLegend } from "@/components/study/MasteryBadge";
+import { ProgressCard } from "@/components/study/ProgressCard";
 import { getVerseProgress, resetVerseProgress } from "@/lib/progress-data";
 import {
   DropdownMenu,
@@ -141,8 +142,8 @@ const StudySetup = () => {
       </AlertDialog>
 
       {/* Content */}
-      <main className="flex-1 max-w-2xl mx-auto px-4 py-8 w-full">
-        <div className="space-y-8">
+      <main className="flex-1 max-w-2xl mx-auto px-4 py-6 w-full">
+        <div className="space-y-6">
           {/* Verse Preview */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -153,12 +154,21 @@ const StudySetup = () => {
             <p className="text-lg text-card-foreground leading-relaxed">{verse.text}</p>
           </motion.div>
 
-          {/* Difficulty Selection */}
+          {/* Progress Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-4"
+          >
+            <ProgressCard verseId={verseId || ""} progress={progress} />
+          </motion.div>
+
+          {/* Difficulty Selection */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-3"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Choose Difficulty</h2>
@@ -175,7 +185,7 @@ const StudySetup = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="bg-muted/50 rounded-xl p-4"
           >
             {difficulty === "easy" && (

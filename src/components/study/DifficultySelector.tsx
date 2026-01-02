@@ -43,55 +43,36 @@ export function DifficultySelector({ value, onChange, progress, className }: Dif
   };
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className="flex p-1 rounded-xl bg-secondary">
-        {difficulties.map((difficulty) => {
-          const score = getScore(difficulty.value);
-          const badge = getMasteryBadge(difficulty.value, score);
+    <div className={cn("flex p-1 rounded-xl bg-secondary", className)}>
+      {difficulties.map((difficulty) => {
+        const score = getScore(difficulty.value);
+        const badge = getMasteryBadge(difficulty.value, score);
 
-          return (
-            <button
-              key={difficulty.value}
-              onClick={() => onChange(difficulty.value)}
-              className={cn(
-                "relative flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                value === difficulty.value
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {value === difficulty.value && (
-                <motion.div
-                  layoutId="difficulty-pill"
-                  className="absolute inset-0 bg-primary rounded-lg shadow-sm"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10 flex items-center justify-center gap-1.5">
-                {badge}
-                {difficulty.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      
-      {/* Best scores row */}
-      {progress && (
-        <div className="flex">
-          {difficulties.map((difficulty) => {
-            const score = getScore(difficulty.value);
-            return (
-              <div
-                key={difficulty.value}
-                className="flex-1 text-center text-xs text-muted-foreground"
-              >
-                {score !== null ? `Best: ${score}%` : "—"}
-              </div>
-            );
-          })}
-        </div>
-      )}
+        return (
+          <button
+            key={difficulty.value}
+            onClick={() => onChange(difficulty.value)}
+            className={cn(
+              "relative flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
+              value === difficulty.value
+                ? "text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {value === difficulty.value && (
+              <motion.div
+                layoutId="difficulty-pill"
+                className="absolute inset-0 bg-primary rounded-lg shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <span className="relative z-10 flex items-center justify-center gap-1.5">
+              {badge}
+              {difficulty.label}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
