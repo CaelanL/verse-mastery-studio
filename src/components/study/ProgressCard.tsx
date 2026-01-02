@@ -1,8 +1,8 @@
-import { X, Star } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { VerseProgress } from "@/lib/progress-data";
 import { getEngravedStatus, isMastered } from "@/lib/progress-data";
-import { format } from "date-fns";
+import { format, addMonths } from "date-fns";
 
 interface ProgressCardProps {
   verseId: string;
@@ -22,6 +22,11 @@ function getMonthLabel(monthStr: string): string {
   const [year, month] = monthStr.split("-");
   const date = new Date(parseInt(year), parseInt(month) - 1);
   return format(date, "MMM");
+}
+
+function getFutureMonthLabel(monthsFromNow: number): string {
+  const futureDate = addMonths(new Date(), monthsFromNow);
+  return format(futureDate, "MMM");
 }
 
 export function ProgressCard({ verseId, progress, className }: ProgressCardProps) {
@@ -59,18 +64,16 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className="pt-4 border-t border-border/50">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-center gap-1.5 mb-3">
+              <X className="w-4 h-4 text-purple-500" strokeWidth={3} />
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Engraved Progress
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {engravedStatus.monthsCompleted} of {engravedStatus.monthsRequired} months
               </span>
             </div>
             
             {engravedStatus.isEngraved ? (
-              <div className="flex items-center gap-2 text-purple-500">
-                <Star className="w-4 h-4 fill-current" />
+              <div className="flex items-center justify-center gap-2 text-purple-500">
+                <X className="w-4 h-4" strokeWidth={3} />
                 <span className="text-sm font-medium">Engraved!</span>
               </div>
             ) : (
@@ -95,7 +98,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
                         {isCompleted && <X className="w-3 h-3 text-white" strokeWidth={3} />}
                       </div>
                       <span className="text-[10px] text-muted-foreground">
-                        {monthLabel ? getMonthLabel(monthLabel) : `M${i + 1}`}
+                        {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
                       </span>
                     </div>
                   );
