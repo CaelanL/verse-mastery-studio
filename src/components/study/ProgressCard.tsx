@@ -63,9 +63,15 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
 
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
-          <div className="pt-4 border-t border-border/50">
+          <div className={cn(
+            "pt-4 border-t border-border/50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl",
+            engravedStatus.isEngraved && "bg-gradient-to-b from-amber-500/5 via-amber-400/10 to-amber-500/8 shadow-[inset_0_0_30px_rgba(245,158,11,0.08)]"
+          )}>
             <div className="flex items-center justify-center gap-1.5 mb-3">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <span className={cn(
+                "text-xs font-medium uppercase tracking-wide",
+                engravedStatus.isEngraved ? "text-amber-700/80" : "text-muted-foreground"
+              )}>
                 {engravedStatus.isEngraved ? "Engraved" : "Engraved Progress"}
               </span>
               {engravedStatus.isEngraved ? (
@@ -78,57 +84,51 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
               )}
             </div>
             
-            {/* Shimmer background when fully engraved */}
-            <div className={cn(
-              "relative rounded-lg p-3 -mx-1",
-              engravedStatus.isEngraved && "bg-gradient-to-r from-amber-500/5 via-yellow-400/10 to-amber-500/5"
-            )}>
-              <div className="relative flex items-center justify-between">
-                {/* Connecting line */}
-                <div className={cn(
-                  "absolute top-1/2 left-3 right-3 h-0.5 -translate-y-1/2 -mt-3",
-                  engravedStatus.isEngraved 
-                    ? "bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]" 
-                    : "bg-border"
-                )} />
-                
-                {Array.from({ length: engravedStatus.monthsRequired }).map((_, i) => {
-                  const isCompleted = i < engravedStatus.monthsCompleted;
-                  const monthLabel = engravedStatus.completedMonths[i];
-                  const isGolden = engravedStatus.isEngraved && isCompleted;
-                  
-                  return (
-                    <div key={i} className="relative z-10 flex flex-col items-center gap-1.5">
-                      <div
-                        className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors",
-                          isGolden
-                            ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                            : isCompleted
-                              ? "bg-purple-500 border-purple-500"
-                              : "bg-background border-muted-foreground/30"
-                        )}
-                      >
-                        {isCompleted && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                      </div>
-                      <span className={cn(
-                        "text-[10px]",
-                        isGolden ? "text-amber-600 font-medium" : "text-muted-foreground"
-                      )}>
-                        {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="relative flex items-center justify-between px-2">
+              {/* Connecting line */}
+              <div className={cn(
+                "absolute top-1/2 left-5 right-5 h-0.5 -translate-y-1/2 -mt-3",
+                engravedStatus.isEngraved 
+                  ? "bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]" 
+                  : "bg-border"
+              )} />
               
-              {/* "Forever in your heart" tagline when engraved */}
-              {engravedStatus.isEngraved && (
-                <p className="text-center text-[10px] text-amber-600/70 mt-3 tracking-wide">
-                  Forever in your heart
-                </p>
-              )}
+              {Array.from({ length: engravedStatus.monthsRequired }).map((_, i) => {
+                const isCompleted = i < engravedStatus.monthsCompleted;
+                const monthLabel = engravedStatus.completedMonths[i];
+                const isGolden = engravedStatus.isEngraved && isCompleted;
+                
+                return (
+                  <div key={i} className="relative z-10 flex flex-col items-center gap-1.5">
+                    <div
+                      className={cn(
+                        "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors",
+                        isGolden
+                          ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                          : isCompleted
+                            ? "bg-purple-500 border-purple-500"
+                            : "bg-background border-muted-foreground/30"
+                      )}
+                    >
+                      {isCompleted && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                    </div>
+                    <span className={cn(
+                      "text-[10px]",
+                      isGolden ? "text-amber-600 font-medium" : "text-muted-foreground"
+                    )}>
+                      {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+            
+            {/* "Forever in your heart" tagline when engraved */}
+            {engravedStatus.isEngraved && (
+              <p className="text-center text-[10px] text-amber-600/70 mt-3 tracking-wide">
+                Forever in your heart
+              </p>
+            )}
           </div>
         )}
       </div>
