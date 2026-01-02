@@ -65,10 +65,10 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className="pt-4 border-t border-border/50">
             <div className="flex items-center justify-center gap-1.5 mb-3">
-              <Cross className="w-4 h-4 text-purple-500" />
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Engraved Progress
               </span>
+              <Cross className="w-4 h-4 text-purple-500" />
             </div>
             
             {engravedStatus.isEngraved ? (
