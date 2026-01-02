@@ -41,7 +41,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
   return (
     <div className={cn("space-y-3", className)}>
       <h2 className="text-lg font-semibold text-foreground">Your Progress</h2>
-      <div className="bg-card rounded-2xl p-4 shadow-elevation-2 border border-border/50 space-y-4">
+      <div className="bg-card rounded-2xl p-4 pb-0 shadow-elevation-2 border border-border/50 space-y-4 overflow-hidden">
         {/* Best scores - Horizontal columns with lines */}
         <div className="flex items-stretch divide-x divide-border">
           {(["easy", "medium", "hard"] as Difficulty[]).map((difficulty) => {
@@ -64,7 +64,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className={cn(
-            "pt-4 border-t -mx-4 -mb-4 px-4 pb-5 rounded-b-2xl relative",
+            "pt-4 border-t -mx-4 px-4 pb-4 relative",
             engravedStatus.isEngraved 
               ? "bg-amber-500/15 border-amber-400/30" 
               : "border-border/50"
