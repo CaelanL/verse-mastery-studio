@@ -64,7 +64,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className={cn(
-            "pt-4 border-t -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl relative",
+            "pt-4 border-t -mx-4 -mb-4 px-4 pb-5 rounded-b-2xl relative",
             engravedStatus.isEngraved 
               ? "bg-amber-500/15 border-amber-400/30" 
               : "border-border/50"
