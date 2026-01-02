@@ -172,20 +172,11 @@ const StudySetup = () => {
             />
           </motion.div>
 
-          {/* Progress Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <ProgressCard verseId={verseId || ""} progress={progress} />
-          </motion.div>
-
           {/* Difficulty descriptions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="bg-muted/50 rounded-xl p-4"
           >
             {difficulty === "easy" && (
@@ -206,6 +197,15 @@ const StudySetup = () => {
                 Recite the entire verse from memory.
               </p>
             )}
+          </motion.div>
+
+          {/* Progress Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <ProgressCard verseId={verseId || ""} progress={progress} />
           </motion.div>
         </div>
       </main>
