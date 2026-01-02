@@ -70,7 +70,7 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
               : "border-border/50"
           )}
             style={engravedStatus.isEngraved ? {
-              background: 'radial-gradient(ellipse 70% 70% at 50% 50%, rgba(251, 191, 36, 0.3) 0%, rgba(251, 191, 36, 0.08) 70%, transparent 100%)'
+              background: 'radial-gradient(ellipse 90% 40% at 50% 55%, rgba(251, 191, 36, 0.35) 0%, rgba(251, 191, 36, 0.1) 60%, transparent 100%)'
             } : undefined}
           >
             <div className="flex items-center justify-center gap-1.5 mb-3">
