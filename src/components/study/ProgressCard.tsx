@@ -64,80 +64,71 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
           <div className="pt-4 border-t border-border/50">
-            {engravedStatus.isEngraved ? (
-              /* ✨ FULLY ENGRAVED - Celebratory Final State ✨ */
-              <div className="relative flex flex-col items-center py-4">
-                {/* Shimmer background effect */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-500/5 via-yellow-400/10 to-amber-500/5 animate-pulse" />
-                
-                {/* Golden badge container */}
-                <div className="relative flex flex-col items-center gap-3">
-                  {/* Glowing cross emblem */}
-                  <div className="relative">
-                    {/* Outer glow ring */}
-                    <div className="absolute inset-0 w-16 h-16 rounded-full bg-gradient-to-br from-amber-400/30 to-yellow-500/20 blur-md animate-pulse" />
-                    
-                    {/* Inner badge circle */}
-                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                      {/* Cross icon */}
-                      <Cross className="w-8 h-8 text-white drop-shadow-md" strokeWidth={2.5} />
-                    </div>
-                    
-                    {/* Sparkle decorations */}
-                    <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-amber-400 animate-pulse" />
-                    <Sparkles className="absolute -bottom-1 -left-1 w-4 h-4 text-yellow-500 animate-pulse delay-150" />
-                  </div>
-                  
-                  {/* Engraved text with stamp effect */}
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 uppercase">
-                      Engraved
-                    </span>
-                    <span className="text-[10px] text-muted-foreground/70 tracking-wide">
-                      Forever in your heart
-                    </span>
-                  </div>
+            <div className="flex items-center justify-center gap-1.5 mb-3">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {engravedStatus.isEngraved ? "Engraved" : "Engraved Progress"}
+              </span>
+              {engravedStatus.isEngraved ? (
+                <div className="relative">
+                  <Cross className="w-4 h-4 text-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.6)]" />
+                  <Sparkles className="absolute -top-1 -right-2 w-3 h-3 text-amber-400 animate-pulse" />
                 </div>
-              </div>
-            ) : (
-              /* In-progress state */
-              <>
-                <div className="flex items-center justify-center gap-1.5 mb-3">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Engraved Progress
-                  </span>
-                  <Cross className="w-4 h-4 text-purple-500" />
-                </div>
+              ) : (
+                <Cross className="w-4 h-4 text-purple-500" />
+              )}
+            </div>
+            
+            {/* Shimmer background when fully engraved */}
+            <div className={cn(
+              "relative rounded-lg p-3 -mx-1",
+              engravedStatus.isEngraved && "bg-gradient-to-r from-amber-500/5 via-yellow-400/10 to-amber-500/5"
+            )}>
+              <div className="relative flex items-center justify-between">
+                {/* Connecting line */}
+                <div className={cn(
+                  "absolute top-1/2 left-3 right-3 h-0.5 -translate-y-1/2 -mt-3",
+                  engravedStatus.isEngraved 
+                    ? "bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]" 
+                    : "bg-border"
+                )} />
                 
-                <div className="relative flex items-center justify-between">
-                  {/* Connecting line */}
-                  <div className="absolute top-1/2 left-3 right-3 h-0.5 bg-border -translate-y-1/2 -mt-3" />
+                {Array.from({ length: engravedStatus.monthsRequired }).map((_, i) => {
+                  const isCompleted = i < engravedStatus.monthsCompleted;
+                  const monthLabel = engravedStatus.completedMonths[i];
+                  const isGolden = engravedStatus.isEngraved && isCompleted;
                   
-                  {Array.from({ length: engravedStatus.monthsRequired }).map((_, i) => {
-                    const isCompleted = i < engravedStatus.monthsCompleted;
-                    const monthLabel = engravedStatus.completedMonths[i];
-                    
-                    return (
-                      <div key={i} className="relative z-10 flex flex-col items-center gap-1.5">
-                        <div
-                          className={cn(
-                            "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors",
-                            isCompleted
+                  return (
+                    <div key={i} className="relative z-10 flex flex-col items-center gap-1.5">
+                      <div
+                        className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors",
+                          isGolden
+                            ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                            : isCompleted
                               ? "bg-purple-500 border-purple-500"
                               : "bg-background border-muted-foreground/30"
-                          )}
-                        >
-                          {isCompleted && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">
-                          {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
-                        </span>
+                        )}
+                      >
+                        {isCompleted && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                       </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+                      <span className={cn(
+                        "text-[10px]",
+                        isGolden ? "text-amber-600 font-medium" : "text-muted-foreground"
+                      )}>
+                        {monthLabel ? getMonthLabel(monthLabel) : getFutureMonthLabel(i)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* "Forever in your heart" tagline when engraved */}
+              {engravedStatus.isEngraved && (
+                <p className="text-center text-[10px] text-amber-600/70 mt-3 tracking-wide">
+                  Forever in your heart
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>
