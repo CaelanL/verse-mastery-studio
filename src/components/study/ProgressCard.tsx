@@ -63,14 +63,14 @@ export function ProgressCard({ verseId, progress, className }: ProgressCardProps
 
         {/* Engraved Progress - Connected bar with circles */}
         {(hasMastered || engravedStatus.monthsCompleted > 0) && (
-          <div className="pt-4 border-t border-border/50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl relative overflow-hidden">
+          <div className="pt-4 border-t border-border/50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl relative">
             {/* Diffused golden glow - blurred for seamless fade */}
             {engravedStatus.isEngraved && (
               <div 
-                className="absolute inset-0 pointer-events-none"
+                className="absolute -inset-8 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(ellipse 80% 80% at 50% 60%, rgba(251, 191, 36, 0.25) 0%, transparent 70%)',
-                  filter: 'blur(20px)',
+                  background: 'radial-gradient(ellipse 60% 70% at 50% 50%, rgba(251, 191, 36, 0.3) 0%, transparent 70%)',
+                  filter: 'blur(25px)',
                 }}
               />
             )}
